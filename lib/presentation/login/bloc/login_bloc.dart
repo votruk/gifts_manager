@@ -3,12 +3,10 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:gift_manager/data/model/request_error.dart';
 import 'package:gift_manager/presentation/login/model/models.dart';
 
 part 'login_event.dart';
-
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
@@ -26,23 +24,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (state.allFieldsValid) {
       final response =
           await _login(email: state.email, password: state.password);
-      emit(state.copyWith(requestError: RequestError.unknown));
-
-      // if (response == null) {
-      //   emit(state.copyWith(authenticated: true));
-      // } else {
-      //   switch (response) {
-      //     case LoginError.emailNotExist:
-      //       emit(state.copyWith(emailError: EmailError.notExist));
-      //       break;
-      //     case LoginError.wrongPassword:
-      //       emit(state.copyWith(passwordError: PasswordError.wrongPassword));
-      //       break;
-      //     case LoginError.other:
-      //       emit(state.copyWith(requestError: RequestError.unknown));
-      //       break;
-      //   }
-      // }
+      if (response == null) {
+        emit(state.copyWith(authenticated: true));
+      } else {
+        switch (response) {
+          case LoginError.emailNotExist:
+            emit(state.copyWith(emailError: EmailError.notExist));
+            break;
+          case LoginError.wrongPassword:
+            emit(state.copyWith(passwordError: PasswordError.wrongPassword));
+            break;
+          case LoginError.other:
+            emit(state.copyWith(requestError: RequestError.unknown));
+            break;
+        }
+      }
     }
   }
 
@@ -92,18 +88,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     Emitter<LoginState> emit,
   ) {
     emit(state.copyWith(requestError: RequestError.noError));
-  }
-
-  @override
-  void onEvent(LoginEvent event) {
-    debugPrint('Login Bloc. Event happened: $event');
-    super.onEvent(event);
-  }
-
-  @override
-  void onTransition(Transition<LoginEvent, LoginState> transition) {
-    debugPrint('Login Bloc. Transition happened: $transition');
-    super.onTransition(transition);
   }
 }
 
