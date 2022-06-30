@@ -18,10 +18,32 @@ class LoginPage extends StatelessWidget {
   }
 }
 
-class _LoginPageWidget extends StatelessWidget {
+class _LoginPageWidget extends StatefulWidget {
   const _LoginPageWidget({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<_LoginPageWidget> createState() => _LoginPageWidgetState();
+}
+
+class _LoginPageWidgetState extends State<_LoginPageWidget> {
+  late final FocusNode _emailFocusNode;
+  late final FocusNode _passwordFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailFocusNode = FocusNode();
+    _passwordFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +57,7 @@ class _LoginPageWidget extends StatelessWidget {
       },
       child: Column(
         children: [
-          const Spacer(flex: 64),
+          const SizedBox(height: 64),
           const Center(
             child: Text(
               "Вход",
@@ -43,32 +65,14 @@ class _LoginPageWidget extends StatelessWidget {
             ),
           ),
           const Spacer(flex: 88),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 36),
-            child: TextField(
-              decoration: InputDecoration(hintText: 'Почта'),
-            ),
+          _EmailTextField(
+            emailFocusNode: _emailFocusNode,
+            passwordFocusNode: _passwordFocusNode,
           ),
           const SizedBox(height: 8),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 36),
-            child: TextField(
-              decoration: InputDecoration(hintText: 'Пароль'),
-            ),
-          ),
+          _PasswordTextField(passwordFocusNode: _passwordFocusNode),
           const SizedBox(height: 40),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 36),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => context
-                    .read<LoginBloc>()
-                    .add(const LoginLoginButtonClicked()),
-                child: const Text("Войти"),
-              ),
-            ),
-          ),
+          const _LoginButton(),
           const SizedBox(height: 24),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -87,6 +91,89 @@ class _LoginPageWidget extends StatelessWidget {
           ),
           const Spacer(flex: 284),
         ],
+      ),
+    );
+  }
+}
+
+class _LoginButton extends StatelessWidget {
+  const _LoginButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 36),
+      child: SizedBox(
+        width: double.infinity,
+        child: BlocSelector<LoginBloc, LoginState, bool>(
+          selector: (state) {
+            return state.emailValid && state.passwordValid;
+          },
+          builder: (context, fieldsValid) {
+            return ElevatedButton(
+              onPressed: fieldsValid
+                  ? () => context
+                      .read<LoginBloc>()
+                      .add(const LoginLoginButtonClicked())
+                  : null,
+              child: const Text("Войти"),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _EmailTextField extends StatelessWidget {
+  const _EmailTextField({
+    Key? key,
+    required FocusNode emailFocusNode,
+    required FocusNode passwordFocusNode,
+  })  : _emailFocusNode = emailFocusNode,
+        _passwordFocusNode = passwordFocusNode,
+        super(key: key);
+
+  final FocusNode _emailFocusNode;
+  final FocusNode _passwordFocusNode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 36),
+      child: TextField(
+        focusNode: _emailFocusNode,
+        onChanged: (text) =>
+            context.read<LoginBloc>().add(LoginEmailChanged(text)),
+        onSubmitted: (_) => _passwordFocusNode.requestFocus(),
+        decoration: InputDecoration(hintText: 'Почта'),
+      ),
+    );
+  }
+}
+
+class _PasswordTextField extends StatelessWidget {
+  const _PasswordTextField({
+    Key? key,
+    required FocusNode passwordFocusNode,
+  })  : _passwordFocusNode = passwordFocusNode,
+        super(key: key);
+
+  final FocusNode _passwordFocusNode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 36),
+      child: TextField(
+        focusNode: _passwordFocusNode,
+        onChanged: (text) =>
+            context.read<LoginBloc>().add(LoginPasswordChanged(text)),
+        onSubmitted: (_) =>
+            context.read<LoginBloc>().add(const LoginLoginButtonClicked()),
+        decoration: InputDecoration(hintText: 'Пароль'),
       ),
     );
   }
