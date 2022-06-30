@@ -19,6 +19,8 @@ class LoginState extends Equatable {
     required this.authenticated,
   });
 
+  bool get allFieldsValid => emailValid && passwordValid;
+
   factory LoginState.initial() => const LoginState(
         email: '',
         emailError: EmailError.noError,
