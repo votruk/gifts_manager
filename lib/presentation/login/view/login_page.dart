@@ -138,6 +138,15 @@ class _LoginButton extends StatelessWidget {
                       .add(const LoginLoginButtonClicked())
                   : null,
               child: const Text("Войти"),
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith((states) {
+                    if (states.contains(MaterialState.disabled)) {
+                      return const Color(0xB3366EC4);
+                    }
+                    return const Color(0xFF2950AF);
+                  }),
+                  textStyle: MaterialStateProperty.all(
+                      TextStyle(color: Colors.white, fontSize: 16))),
             );
           },
         ),
