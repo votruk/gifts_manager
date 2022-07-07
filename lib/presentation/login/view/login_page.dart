@@ -179,8 +179,10 @@ class _EmailTextField extends StatelessWidget {
             onChanged: (text) =>
                 context.read<LoginBloc>().add(LoginEmailChanged(text)),
             onSubmitted: (_) => _passwordFocusNode.requestFocus(),
+            autocorrect: false,
+            keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              hintText: 'Почта',
+              labelText: 'Почта',
               errorText: emailError == EmailError.noError
                   ? null
                   : emailError.toString(),
@@ -210,12 +212,15 @@ class _PasswordTextField extends StatelessWidget {
         builder: (context, passwordError) {
           return TextField(
             focusNode: _passwordFocusNode,
+            autocorrect: false,
+            keyboardType: TextInputType.visiblePassword,
+            obscureText: true,
             onChanged: (text) =>
                 context.read<LoginBloc>().add(LoginPasswordChanged(text)),
             onSubmitted: (_) =>
                 context.read<LoginBloc>().add(const LoginLoginButtonClicked()),
             decoration: InputDecoration(
-              hintText: 'Пароль',
+              labelText: 'Пароль',
               errorText: passwordError == PasswordError.noError
                   ? null
                   : passwordError.toString(),

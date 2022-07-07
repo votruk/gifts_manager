@@ -87,4 +87,39 @@ final lightTheme = _base.copyWith(
       ),
     ),
   ),
+  inputDecorationTheme: _base.inputDecorationTheme.copyWith(
+    hintStyle: _base.primaryTextTheme.bodyText1!.copyWith(
+      color: AppColors.lightGrey60,
+      fontWeight: FontWeight.w500,
+      fontSize: 16,
+      height: 1.25,
+    ),
+    errorStyle: const TextStyle(
+      color: AppColors.lightPink100,
+    ),
+    border: const UnderlineInputBorder(
+      borderSide: BorderSide(color: AppColors.black16, width: 1),
+    ),
+    focusedBorder: const UnderlineInputBorder(
+      borderSide: BorderSide(color: AppColors.lightDarkBlue100, width: 2),
+    ),
+    errorBorder: const UnderlineInputBorder(
+      borderSide: BorderSide(color: AppColors.lightPink100, width: 2),
+    ),
+    labelStyle: _base.primaryTextTheme.bodyText1!.copyWith(
+      color: AppColors.lightGrey60,
+      fontWeight: FontWeight.w500,
+      fontSize: 16,
+      height: 1.25,
+    ),
+    floatingLabelStyle: const TextStyle(
+      color: AppColors.lightDarkBlue100,
+      fontWeight: FontWeight.w400,
+      fontSize: 12,
+    ),
+  ),
+  textSelectionTheme: _base.textSelectionTheme.copyWith(
+    cursorColor: AppColors.lightDarkBlue100,
+    selectionHandleColor: AppColors.lightLightBlue100,
+  ),
 );
