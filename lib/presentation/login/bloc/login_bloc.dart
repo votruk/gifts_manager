@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:equatable/equatable.dart';
 import 'package:gift_manager/data/model/request_error.dart';
 import 'package:gift_manager/presentation/login/model/models.dart';
@@ -10,6 +11,9 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  static final _passwordRegexp =
+      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$');
+
   LoginBloc() : super(LoginState.initial()) {
     on<LoginLoginButtonClicked>(_loginButtonClicked);
     on<LoginEmailChanged>(_emailChanged);
@@ -58,7 +62,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     Emitter<LoginState> emit,
   ) {
     final newEmail = event.email;
-    final emailValid = newEmail.length > 4;
+    final emailValid = _emailValid(newEmail);
     emit(
       state.copyWith(
         email: newEmail,
@@ -69,18 +73,26 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     );
   }
 
+  bool _emailValid(final String email) {
+    return EmailValidator.validate(email);
+  }
+
   FutureOr<void> _passwordChanged(
     LoginPasswordChanged event,
     Emitter<LoginState> emit,
   ) {
     final newPassword = event.password;
-    final passwordValid = newPassword.length >= 8;
+    final passwordValid = _passwordValid(newPassword);
     emit(state.copyWith(
       password: newPassword,
       passwordValid: passwordValid,
       passwordError: PasswordError.noError,
       authenticated: false,
     ));
+  }
+
+  bool _passwordValid(final String password) {
+    return _passwordRegexp.hasMatch(password);
   }
 
   FutureOr<void> _requestErrorShowed(
