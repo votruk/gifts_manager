@@ -7,6 +7,8 @@ import 'package:gift_manager/extensions/theme_extensions.dart';
 import 'package:gift_manager/presentation/registration/bloc/registration_bloc.dart';
 import 'package:gift_manager/resources/app_colors.dart';
 
+import '../../home/view/home_page.dart';
+
 class RegistrationPage extends StatelessWidget {
   const RegistrationPage({Key? key}) : super(key: key);
 
@@ -88,42 +90,54 @@ class _LoginPageWidgetState extends State<_RegistrationPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(),
-        body: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                children: [
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('Создать аккаунт', style: context.theme.h2),
-                  ),
-                  const SizedBox(height: 24),
-                  _EmailTextField(
-                    emailFocusNode: _emailFocusNode,
-                    passwordFocusNode: _passwordFocusNode,
-                  ),
-                  _PasswordTextField(
-                    passwordFocusNode: _passwordFocusNode,
-                    passwordConfirmationFocusNode: _passwordConfirmationFocusNode,
-                  ),
-                  _PasswordConfirmationTextField(
-                    passwordConfirmationFocusNode: _passwordConfirmationFocusNode,
-                    nameFocusNode: _nameFocusNode,
-                  ),
-                  _NameTextField(
-                    nameFocusNode: _nameFocusNode,
-                  ),
-                  const SizedBox(height: 16),
-                  const _AvatarWidget(),
-                ],
+    return BlocListener<RegistrationBloc, RegistrationState>(
+      listener: (context, state) {
+        if (state is RegistrationCompleted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const HomePage()),
+            (route) => false,
+          );
+        }
+      },
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(),
+          body: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: [
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text('Создать аккаунт', style: context.theme.h2),
+                    ),
+                    const SizedBox(height: 24),
+                    _EmailTextField(
+                      emailFocusNode: _emailFocusNode,
+                      passwordFocusNode: _passwordFocusNode,
+                    ),
+                    _PasswordTextField(
+                      passwordFocusNode: _passwordFocusNode,
+                      passwordConfirmationFocusNode:
+                          _passwordConfirmationFocusNode,
+                    ),
+                    _PasswordConfirmationTextField(
+                      passwordConfirmationFocusNode:
+                          _passwordConfirmationFocusNode,
+                      nameFocusNode: _nameFocusNode,
+                    ),
+                    _NameTextField(
+                      nameFocusNode: _nameFocusNode,
+                    ),
+                    const SizedBox(height: 16),
+                    const _AvatarWidget(),
+                  ],
+                ),
               ),
-            ),
-            const _RegisterButton(),
-          ],
+              const _RegisterButton(),
+            ],
+          ),
         ),
       ),
     );
