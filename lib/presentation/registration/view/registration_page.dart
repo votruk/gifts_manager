@@ -67,19 +67,26 @@ class _AvatarWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SvgPicture.network(
-            'https://avatars.dicebear.com/api/croodles/test.svg',
-            height: 48,
-            width: 48,
+          BlocBuilder<RegistrationBloc, RegistrationState>(
+            buildWhen: (_, current) => current is RegistrationFieldsInfo,
+            builder: (context, state) {
+              final fieldsInfo = state as RegistrationFieldsInfo;
+              return SvgPicture.network(
+                fieldsInfo.avatarLink,
+                height: 48,
+                width: 48,
+              );
+            },
           ),
           const SizedBox(width: 8),
           Text('Ваш аватар', style: context.theme.h3),
           const SizedBox(width: 8),
           const Spacer(),
           TextButton(
-            onPressed: () => context
-                .read<RegistrationBloc>()
-                .add(const RegistrationChangeAvatar()),
+            onPressed: () =>
+                context
+                    .read<RegistrationBloc>()
+                    .add(const RegistrationChangeAvatar()),
             child: const Text('Изменить'),
           ),
         ],
