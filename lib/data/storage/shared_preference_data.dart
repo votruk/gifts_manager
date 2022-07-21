@@ -10,17 +10,17 @@ class SharedPreferenceData {
 
   SharedPreferenceData._internal();
 
-  Future<bool> setToken(final String token) =>
+  Future<bool> setToken(final String? token) =>
       _setItem(key: _tokenKey, item: token);
 
   Future<String?> getToken() => _getItem(_tokenKey);
 
   Future<bool> _setItem({
     required final String key,
-    required final String item,
+    required final String? item,
   }) async {
     final sp = await SharedPreferences.getInstance();
-    final result = sp.setString(key, item);
+    final result = sp.setString(key, item ?? '');
     return result;
   }
 
