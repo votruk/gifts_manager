@@ -32,12 +32,21 @@ class _RegistrationPageWidget extends StatefulWidget {
 class _LoginPageWidgetState extends State<_RegistrationPageWidget> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: [
-          const _AvatarWidget()
-        ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: [
+                  _AvatarWidget(),
+                ],
+              ),
+            ),
+            _RegisterButton(),
+          ],
+        ),
       ),
     );
   }
@@ -83,13 +92,41 @@ class _AvatarWidget extends StatelessWidget {
           const SizedBox(width: 8),
           const Spacer(),
           TextButton(
-            onPressed: () =>
-                context
-                    .read<RegistrationBloc>()
-                    .add(const RegistrationChangeAvatar()),
+            onPressed: () => context
+                .read<RegistrationBloc>()
+                .add(const RegistrationChangeAvatar()),
             child: const Text('Изменить'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _RegisterButton extends StatelessWidget {
+  const _RegisterButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: SizedBox(
+        width: double.infinity,
+        child: BlocSelector<RegistrationBloc, RegistrationState, bool>(
+          selector: (state) => state is RegistrationInProgress,
+          builder: (context, inProgress) {
+            return ElevatedButton(
+              onPressed: inProgress
+                  ? null
+                  : () => context
+                      .read<RegistrationBloc>()
+                      .add(const RegistrationCreateAccount()),
+              child: const Text("Создать"),
+            );
+          },
+        ),
       ),
     );
   }
