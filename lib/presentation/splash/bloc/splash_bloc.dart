@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:gift_manager/data/storage/shared_preference_data.dart';
+import 'package:gift_manager/data/repository/token_repository.dart';
 
 part 'splash_event.dart';
 part 'splash_state.dart';
@@ -16,7 +16,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     final SplashLoaded event,
     final Emitter<SplashState> emit,
   ) async {
-    final token = await SharedPreferenceData.getInstance().getToken();
+    final token = await TokenRepository.getInstance().getItem();
     if (token == null || token.isEmpty) {
       emit(const SplashUnauthorized());
     } else {
