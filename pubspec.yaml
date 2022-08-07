@@ -21,6 +21,7 @@ dependencies:
   pretty_dio_logger: ^1.1.1
   json_annotation: ^4.6.0
   rxdart: ^0.27.5
+  either_dart: ^0.2.0
 
 dev_dependencies:
   flutter_test:
