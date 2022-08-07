@@ -8,6 +8,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gift_manager/data/http/model/create_account_request_dto.dart';
 import 'package:gift_manager/data/http/model/user_with_tokens_dto.dart';
+import 'package:gift_manager/data/http/unauthorized_api_service.dart';
 import 'package:gift_manager/data/model/request_error.dart';
 import 'package:gift_manager/data/storage/shared_preference_data.dart';
 import 'package:gift_manager/presentation/registration/model/errors.dart';
@@ -160,35 +161,18 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
   }
 
   Future<String> _register() async {
-    final dio = Dio(
-      BaseOptions(baseUrl: 'https://giftmanager.skill-branch.ru/api'),
-    );
-    if (kDebugMode) {
-      dio.interceptors.add(
-        PrettyDioLogger(
-          request: true,
-          requestHeader: true,
-          requestBody: true,
-          responseHeader: true,
-          responseBody: true,
-          error: true,
-        ),
-      );
-    }
-    final requestBody = CreateAccountRequestDto(
-      email: _email,
-      password: _password,
-      name: _name,
-      avatarUrl: _avatarBuilder(_avatarKey),
-    );
     try {
-      final response = await dio.post(
-        '/auth/create',
-        data: requestBody.toJson(),
+      final response = await UnauthorizedApiService.getInstance().register(
+        email: _email,
+        password: _password,
+        name: _name,
+        avatarUrl: _avatarBuilder(_avatarKey),
       );
-      final userWithTokens = UserWithTokensDto.fromJson(response.data);
-      return userWithTokens.token;
-    } catch (e) {}
+      //TODO
+      return response?.token ?? 'asd';
+    } catch (e) {
+      //TODO
+    }
     return 'token';
   }
 
