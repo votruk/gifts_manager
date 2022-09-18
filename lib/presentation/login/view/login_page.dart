@@ -58,8 +58,9 @@ class _LoginPageWidgetState extends State<_LoginPageWidget> {
         BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state.authenticated) {
-              Navigator.of(context).push(
+              Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (_) => const HomePage()),
+                (route) => false,
               );
             }
           },
