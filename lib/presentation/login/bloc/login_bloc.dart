@@ -13,6 +13,7 @@ import 'package:gift_manager/data/model/request_error.dart';
 import 'package:gift_manager/data/repository/refresh_token_repository.dart';
 import 'package:gift_manager/data/repository/token_repository.dart';
 import 'package:gift_manager/data/repository/user_repository.dart';
+import 'package:gift_manager/di/service_locator.dart';
 import 'package:gift_manager/presentation/login/model/models.dart';
 
 part 'login_event.dart';
@@ -20,7 +21,6 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-
   LoginBloc() : super(LoginState.initial()) {
     on<LoginLoginButtonClicked>(_loginButtonClicked);
     on<LoginEmailChanged>(_emailChanged);
@@ -37,9 +37,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           await _login(email: state.email, password: state.password);
       if (response.isRight) {
         final userWithTokens = response.right;
-        await UserRepository.getInstance().setItem(userWithTokens.user);
-        await TokenRepository.getInstance().setItem(userWithTokens.token);
-        await RefreshTokenRepository.getInstance()
+        await sl.get<UserRepository>().setItem(userWithTokens.user);
+        await sl.get<TokenRepository>().setItem(userWithTokens.token);
+        await sl
+            .get<RefreshTokenRepository>()
             .setItem(userWithTokens.refreshToken);
         emit(state.copyWith(authenticated: true));
       } else {
