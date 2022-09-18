@@ -21,7 +21,15 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc() : super(LoginState.initial()) {
+  final UserRepository userRepository;
+  final TokenRepository tokenRepository;
+  final RefreshTokenRepository refreshTokenRepository;
+
+  LoginBloc({
+    required this.userRepository,
+    required this.tokenRepository,
+    required this.refreshTokenRepository,
+  }) : super(LoginState.initial()) {
     on<LoginLoginButtonClicked>(_loginButtonClicked);
     on<LoginEmailChanged>(_emailChanged);
     on<LoginPasswordChanged>(_passwordChanged);
@@ -37,11 +45,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           await _login(email: state.email, password: state.password);
       if (response.isRight) {
         final userWithTokens = response.right;
-        await sl.get<UserRepository>().setItem(userWithTokens.user);
-        await sl.get<TokenRepository>().setItem(userWithTokens.token);
-        await sl
-            .get<RefreshTokenRepository>()
-            .setItem(userWithTokens.refreshToken);
+        await userRepository.setItem(userWithTokens.user);
+        await tokenRepository.setItem(userWithTokens.token);
+        await refreshTokenRepository.setItem(userWithTokens.refreshToken);
         emit(state.copyWith(authenticated: true));
       } else {
         final apiError = response.left;
