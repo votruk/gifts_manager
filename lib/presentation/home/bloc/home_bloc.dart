@@ -45,6 +45,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       _logout();
       return;
     }
+    await Future<void>.delayed(Duration(seconds: 3));
     final giftsResponse = await authorizedApiService.getAllGifts();
     final gifts =
         giftsResponse.isRight ? giftsResponse.right.gifts : const <GiftDto>[];
