@@ -1,19 +1,21 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:gift_manager/data/http/authorization_interceptor.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-class DioProvider {
-  Dio createDio() {
-    final dio = Dio(
-      BaseOptions(
-        baseUrl: 'https://giftmanager.skill-branch.ru/api',
-        connectTimeout: 5000,
-        receiveTimeout: 5000,
-        sendTimeout: 5000,
-      ),
-    );
+class DioBuilder {
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://giftmanager.skill-branch.ru/api',
+      connectTimeout: 5000,
+      receiveTimeout: 5000,
+      sendTimeout: 5000,
+    ),
+  );
+
+  DioBuilder() {
     if (kDebugMode) {
-      dio.interceptors.add(
+      _dio.interceptors.add(
         PrettyDioLogger(
           request: true,
           requestHeader: true,
@@ -24,6 +26,13 @@ class DioProvider {
         ),
       );
     }
-    return dio;
+  }
+
+  Dio build() => _dio;
+
+  DioBuilder addAuthorizationInterceptor(
+      final AuthorizationInterceptor interceptor) {
+    _dio.interceptors.add(interceptor);
+    return this;
   }
 }
