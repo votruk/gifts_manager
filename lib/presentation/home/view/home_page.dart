@@ -37,9 +37,9 @@ class _HomePageWidget extends StatelessWidget {
             children: [
               BlocBuilder<HomeBloc, HomeState>(
                 builder: (context, state) {
-                  if (state is HomeWithUser) {
+                  if (state is HomeWithUserInfo) {
                     return Text(
-                      state.user.toString(),
+                      "${state.user}\n\n${state.gifts.join('\n')}",
                       textAlign: TextAlign.center,
                     );
                   }
