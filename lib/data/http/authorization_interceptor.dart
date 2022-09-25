@@ -23,7 +23,7 @@ class AuthorizationInterceptor extends Interceptor {
       await logoutInteractor.logout();
       return handler.next(options);
     }
-    options.headers[HttpHeaders.authorizationHeader] = 'Bearer2 $token';
+    options.headers[HttpHeaders.authorizationHeader] = 'Bearer $token';
     return handler.next(options);
   }
 

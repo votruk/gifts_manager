@@ -8,7 +8,9 @@ part of 'gifts_response_dto.dart';
 
 GiftsResponseDto _$GiftsResponseDtoFromJson(Map<String, dynamic> json) =>
     GiftsResponseDto(
-      gifts: json['gifts'] as List<GiftDto>,
+      gifts: (json['gifts'] as List<dynamic>)
+          .map((e) => GiftDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$GiftsResponseDtoToJson(GiftsResponseDto instance) =>

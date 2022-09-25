@@ -119,6 +119,9 @@ void _setupBlocs() {
       userRepository: sl.get<UserRepository>(),
       logoutInteractor: sl.get<LogoutInteractor>(),
       authorizedApiService: sl.get<AuthorizedApiService>(),
+      unauthorizedApiService: sl.get<UnauthorizedApiService>(),
+      refreshTokenRepository: sl.get<RefreshTokenRepository>(),
+      tokenRepository: sl.get<TokenRepository>(),
     ),
   );
 }
