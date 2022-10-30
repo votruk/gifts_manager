@@ -174,7 +174,6 @@ class _GiftsListWidget extends StatelessWidget {
         }
         final gift = gifts[index - 1];
         return Container(
-          height: 88,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
