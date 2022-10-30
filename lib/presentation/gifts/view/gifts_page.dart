@@ -125,7 +125,7 @@ class _InitialLoadingErrorWidget extends StatelessWidget {
   }
 }
 
-class _GiftsListWidget extends StatelessWidget {
+class _GiftsListWidget extends StatefulWidget {
   const _GiftsListWidget({
     Key? key,
     required this.gifts,
@@ -138,11 +138,38 @@ class _GiftsListWidget extends StatelessWidget {
   final bool showError;
 
   @override
+  State<_GiftsListWidget> createState() => _GiftsListWidgetState();
+}
+
+class _GiftsListWidgetState extends State<_GiftsListWidget> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.addListener(() {
+        if (_scrollController.position.extentAfter < 300) {
+          context.read<GiftsBloc>().add(const GiftsAutoLoadingRequest());
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListView.separated(
+      controller: _scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemCount: gifts.length + 1 + (_haveExtraWidget ? 1 : 0),
+      itemCount: widget.gifts.length + 1 + (_haveExtraWidget ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == 0) {
           return const Text(
@@ -153,26 +180,44 @@ class _GiftsListWidget extends StatelessWidget {
             ),
           );
         }
-        if (index == gifts.length + 1) {
-          if (showLoading) {
+        if (index == widget.gifts.length + 1) {
+          if (widget.showLoading) {
             return Container(
-              height: 56,
+              height: 128,
               alignment: Alignment.center,
               child: const CircularProgressIndicator(),
             );
           } else {
-            if (!showError) {
+            if (!widget.showError) {
               debugPrint(
                   'index = gifts.length + 1 but showLoading = false && showError = false');
             }
             return Container(
-              height: 56,
+              height: 128,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: const Color(0xFFFFE8F2),
+              ),
               alignment: Alignment.center,
-              child: Text('ОШИБКА'),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text('Не удалось загрузить данные'),
+                  Text('Попробуйте еще раз'),
+                  TextButton(
+                    onPressed: () => context
+                        .read<GiftsBloc>()
+                        .add(const GiftsLoadingRequest()),
+                    child: Text('Попробовать еще раз'),
+                  )
+                ],
+              ),
             );
           }
         }
-        final gift = gifts[index - 1];
+        final gift = widget.gifts[index - 1];
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           decoration: BoxDecoration(
@@ -206,5 +251,5 @@ class _GiftsListWidget extends StatelessWidget {
     );
   }
 
-  bool get _haveExtraWidget => showLoading || showError;
+  bool get _haveExtraWidget => widget.showLoading || widget.showError;
 }

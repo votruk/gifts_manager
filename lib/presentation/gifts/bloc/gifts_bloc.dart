@@ -15,6 +15,7 @@ class GiftsBloc extends Bloc<GiftsEvent, GiftsState> {
   }) : super(const InitialGiftsLoadingState()) {
     on<GiftsPageLoaded>(_onGiftsPageLoaded);
     on<GiftsLoadingRequest>(_onGiftsLoadingRequest);
+    on<GiftsAutoLoadingRequest>(_onGiftsAutoLoadingRequest);
   }
 
   static const _limit = 10;
@@ -24,7 +25,7 @@ class GiftsBloc extends Bloc<GiftsEvent, GiftsState> {
   final gifts = <GiftDto>[];
 
   PaginationInfo paginationInfo = PaginationInfo.initial();
-  bool initialErrorHappened = false;
+  bool errorHappened = false;
   bool loading = false;
 
   FutureOr<void> _onGiftsPageLoaded(
@@ -41,6 +42,16 @@ class GiftsBloc extends Bloc<GiftsEvent, GiftsState> {
     await _loadGifts(emit);
   }
 
+  FutureOr<void> _onGiftsAutoLoadingRequest(
+    GiftsAutoLoadingRequest event,
+    Emitter<GiftsState> emit,
+  ) async {
+    if (errorHappened) {
+      return;
+    }
+    await _loadGifts(emit);
+  }
+
   FutureOr<void> _loadGifts(
     Emitter<GiftsState> emit,
   ) async {
@@ -53,14 +64,17 @@ class GiftsBloc extends Bloc<GiftsEvent, GiftsState> {
     loading = true;
     if (gifts.isEmpty) {
       emit(const InitialGiftsLoadingState());
+    } else {
+      emit(
+        LoadedGiftsState(gifts: gifts, showError: false, showLoading: true),
+      );
     }
-    await Future.delayed(const Duration(seconds: 2));
     final giftsResponse = await authorizedApiService.getAllGifts(
       limit: _limit,
       offset: paginationInfo.lastLoadedPage * _limit,
     );
     if (giftsResponse.isLeft) {
-      initialErrorHappened = true;
+      errorHappened = true;
       if (gifts.isEmpty) {
         emit(const InitialLoadingErrorState());
       } else {
@@ -69,9 +83,8 @@ class GiftsBloc extends Bloc<GiftsEvent, GiftsState> {
         );
       }
     } else {
-      initialErrorHappened = false;
+      errorHappened = false;
       final canLoadMore = giftsResponse.right.gifts.length == _limit;
-      print('AAAAA: $canLoadMore, length: ${giftsResponse.right.gifts.length}');
       paginationInfo = PaginationInfo(
         canLoadMore: canLoadMore,
         lastLoadedPage: paginationInfo.lastLoadedPage + 1,
@@ -82,7 +95,7 @@ class GiftsBloc extends Bloc<GiftsEvent, GiftsState> {
         gifts.addAll(giftsResponse.right.gifts);
         emit(
           LoadedGiftsState(
-            gifts: gifts,
+            gifts: [...gifts],
             showError: false,
             showLoading: canLoadMore,
           ),
