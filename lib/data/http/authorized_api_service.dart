@@ -26,6 +26,7 @@ class AuthorizedApiService extends BaseApiService {
           'offset': offset,
         },
       );
+
       return GiftsResponseDto.fromJson(response.data);
     });
   }
