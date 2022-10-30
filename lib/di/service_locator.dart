@@ -126,6 +126,8 @@ void _setupBlocs() {
     ),
   );
   sl.registerFactory(
-    () => GiftsBloc(),
+    () => GiftsBloc(
+      authorizedApiService: sl.get<AuthorizedApiService>(),
+    ),
   );
 }

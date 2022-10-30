@@ -31,13 +31,13 @@ class _GiftsPageWidget extends StatelessWidget {
           } else if (state is NoGiftsState) {
             return const _NoGiftsWidget();
           } else if (state is InitialLoadingErrorState) {
-            //TODO loading error state
+            return const _InitialLoadingErrorWidget();
           } else if (state is LoadedGiftsState) {
             //TODO show gifts
           }
           debugPrint('Unknown state: $state');
           //TODO loading error state
-          return const Text("GIFTS PAGE");
+          return Center(child: const Text("GIFTS PAGE"));
         },
       ),
     );
