@@ -21,6 +21,7 @@ class GiftsBloc extends Bloc<GiftsEvent, GiftsState> {
   final gifts = <GiftDto>[];
 
   bool initialErrorHappened = false;
+  bool loading = false;
 
   FutureOr<void> _onGiftsPageLoaded(
     GiftsPageLoaded event,
@@ -39,6 +40,10 @@ class GiftsBloc extends Bloc<GiftsEvent, GiftsState> {
   FutureOr<void> _loadGifts(
     Emitter<GiftsState> emit,
   ) async {
+    if (loading) {
+      return;
+    }
+    loading = true;
     if (gifts.isEmpty) {
       emit(const InitialGiftsLoadingState());
     }
@@ -49,15 +54,21 @@ class GiftsBloc extends Bloc<GiftsEvent, GiftsState> {
       if (gifts.isEmpty) {
         emit(const InitialLoadingErrorState());
       } else {
-        //TODO
+        emit(
+          LoadedGiftsState(gifts: gifts, showError: true, showLoading: false),
+        );
       }
     } else {
+      initialErrorHappened = false;
       if (giftsResponse.right.gifts.isEmpty) {
         emit(const NoGiftsState());
       } else {
-        //TODO return state with gifts
         gifts.addAll(giftsResponse.right.gifts);
+        emit(
+          LoadedGiftsState(gifts: gifts, showError: false, showLoading: true),
+        );
       }
     }
+    loading = false;
   }
 }
