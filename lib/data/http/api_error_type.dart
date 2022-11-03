@@ -1,6 +1,7 @@
 enum ApiErrorType {
   incorrectPassword(21),
   notFound(103),
+  tokenExpired(403),
   missingParams("E_MISSING_OR_INVALID_PARAMS"),
   unknown('unknown');
 

@@ -88,7 +88,7 @@ void _setupApiRelatedClasses() {
     () => UnauthorizedApiService(sl.get<Dio>(instanceName: _notAuthorizedDio)),
   );
   sl.registerLazySingleton(
-    () => AuthorizedApiService(sl.get<Dio>(instanceName: _authorizedDio)),
+    () => AuthorizedApiService(sl.get<Dio>(instanceName: _authorizedDio), ),
   );
 }
 

@@ -27,11 +27,4 @@ class AuthorizationInterceptor extends Interceptor {
     return handler.next(options);
   }
 
-  @override
-  void onError(DioError err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode == 403) {
-      await logoutInteractor.logout();
-    }
-    return handler.next(err);
-  }
 }
