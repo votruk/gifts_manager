@@ -7,6 +7,7 @@ enum RouteName {
   registration(route: "/registration"),
   resetPassword(route: "/reset_password"),
   splash(route: "/"),
+  gift(route: "/gift"),
   ;
 
   static RouteName? find(String name) =>
