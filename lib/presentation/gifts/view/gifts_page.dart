@@ -25,7 +25,6 @@ class _GiftsPageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: BlocBuilder<GiftsBloc, GiftsState>(
         builder: (context, state) {
           if (state is InitialGiftsLoadingState) {
@@ -165,9 +164,15 @@ class _GiftsListWidgetState extends State<_GiftsListWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
     return ListView.separated(
       controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        bottom: 32,
+        top: 32 + mediaQuery.padding.top,
+      ),
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemCount: widget.gifts.length + 1 + (_haveExtraWidget ? 1 : 0),
       itemBuilder: (context, index) {

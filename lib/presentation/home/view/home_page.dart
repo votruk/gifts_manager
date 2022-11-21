@@ -54,7 +54,6 @@ class _HomePageWidgetState extends State<_HomePageWidget> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentTab.index,
           onTap: _changeTab,
