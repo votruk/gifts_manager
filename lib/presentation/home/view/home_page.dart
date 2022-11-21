@@ -4,7 +4,9 @@ import 'package:gift_manager/di/service_locator.dart';
 import 'package:gift_manager/navigation/route_name.dart';
 import 'package:gift_manager/presentation/gifts/view/gifts_page.dart';
 import 'package:gift_manager/presentation/home/bloc/home_bloc.dart';
-import 'package:gift_manager/presentation/login/view/login_page.dart';
+import 'package:gift_manager/presentation/home/models/bottom_tab.dart';
+import 'package:gift_manager/presentation/people/people_page.dart';
+import 'package:gift_manager/presentation/settings/settings_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,8 +20,27 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _HomePageWidget extends StatelessWidget {
+class _HomePageWidget extends StatefulWidget {
   const _HomePageWidget({Key? key}) : super(key: key);
+
+  @override
+  State<_HomePageWidget> createState() => _HomePageWidgetState();
+}
+
+class _HomePageWidgetState extends State<_HomePageWidget> {
+  BottomTab _currentTab = BottomTab.gifts;
+
+  final _pages = const <Widget>[
+    GiftsPage(),
+    PeoplePage(),
+    SettingsPage(),
+  ];
+
+  void _changeTab(int index) {
+    setState(() {
+      _currentTab = BottomTab.values[index];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,37 +55,27 @@ class _HomePageWidget extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(),
-        body: Center(
-          child: Column(
-            children: [
-              BlocBuilder<HomeBloc, HomeState>(
-                builder: (context, state) {
-                  if (state is HomeWithUserInfo) {
-                    return Text(
-                      "${state.user}\n\n${state.gifts.join('\n')}",
-                      textAlign: TextAlign.center,
-                    );
-                  }
-                  return const Text("HomePage");
-                },
-              ),
-              const SizedBox(height: 42),
-              TextButton(
-                onPressed: () async {
-                  context.read<HomeBloc>().add(const HomeLogoutPushed());
-                },
-                child: const Text('Logout'),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () =>
-                    Navigator.of(context).pushNamed(RouteName.gifts.route),
-                child: const Text('Открыть подарки'),
-              ),
-            ],
-          ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentTab.index,
+          onTap: _changeTab,
+          items: <BottomNavigationBarItem>[
+            _createBottomNavBarItem(BottomTab.gifts),
+            _createBottomNavBarItem(BottomTab.people),
+            _createBottomNavBarItem(BottomTab.settings),
+          ],
+        ),
+        body: IndexedStack(
+          index: _currentTab.index,
+          children: _pages,
         ),
       ),
+    );
+  }
+
+  BottomNavigationBarItem _createBottomNavBarItem(BottomTab tab) {
+    return BottomNavigationBarItem(
+      label: tab.label,
+      icon: Icon(tab.icon),
     );
   }
 }
